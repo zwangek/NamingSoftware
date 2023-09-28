@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>T2InputChecker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PopNames3111</a> &gt; <a href="index.source.html" class="el_package">comp3111.popnames</a> &gt; <span class="el_source">T2InputChecker.java</span></div><h1>T2InputChecker.java</h1><pre class="source lang-java linenums">package comp3111.popnames;
+
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+/**
+ * Class used to check Task2 input. 
+ * Meanwhile it can manipulate some GUI components to show corresponding error messages.
+ * @author WANG, Zeyu
+ *
+ */
+public class T2InputChecker extends InputCheckerGeneral {
+    private TextField textfieldT2SYear;
+
+    private TextField textfieldT2EYear;
+
+    private TextField textfieldT2Rank;
+
+    private RadioButton radioButtonT2M;
+
+    private RadioButton radioButtonT2F;
+
+    private Button buttonT2Generate;
+    
+    private Label labelT2SYWarning;
+
+    private Label labelT2EYWarning;
+
+    private Label labelT2RankWarning;
+	
+    /**
+     * Construct a T2InputChecker object.
+     * Parameters are GUI components
+     * @param textfieldT2SYear Input area for start year.
+     * @param textfieldT2EYear Input area for end year.
+     * @param textfieldT2Rank Input area for rank.
+     * @param radioButtonT2M One of the gender input buttons
+     * @param radioButtonT2F Another one of the gender input buttons.
+     * @param buttonT2Generate Generate button at bottom-right corner.
+     * @param labelT2SYWarning Error message for invalid start year.
+     * @param labelT2EYWarning Error message for invalid end year.
+     * @param labelT2RankWarning Error message for invalid rank.
+     */
+	public T2InputChecker(TextField textfieldT2SYear, TextField textfieldT2EYear, TextField textfieldT2Rank, RadioButton radioButtonT2M, RadioButton radioButtonT2F,
+<span class="fc" id="L46">			Button buttonT2Generate, Label labelT2SYWarning, Label labelT2EYWarning, Label labelT2RankWarning) {</span>
+<span class="fc" id="L47">		this.textfieldT2SYear = textfieldT2SYear;</span>
+<span class="fc" id="L48">		this.textfieldT2EYear = textfieldT2EYear;</span>
+<span class="fc" id="L49">		this.textfieldT2Rank = textfieldT2Rank;</span>
+<span class="fc" id="L50">		this.radioButtonT2M = radioButtonT2M;</span>
+<span class="fc" id="L51">		this.radioButtonT2F = radioButtonT2F;</span>
+<span class="fc" id="L52">		this.buttonT2Generate = buttonT2Generate;</span>
+<span class="fc" id="L53">		this.labelT2SYWarning = labelT2SYWarning;</span>
+<span class="fc" id="L54">		this.labelT2EYWarning = labelT2EYWarning;</span>
+<span class="fc" id="L55">		this.labelT2RankWarning = labelT2RankWarning;</span>
+<span class="fc" id="L56">	}</span>
+	
+    private boolean checkT2SY() {
+<span class="fc" id="L59">    	String sYear = textfieldT2SYear.getText();</span>
+    	
+<span class="fc bfc" id="L61" title="All 2 branches covered.">    	if (sYear.isEmpty()) {</span>
+<span class="fc" id="L62">			labelT2SYWarning.setVisible(false);</span>
+<span class="fc" id="L63">			buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L64">			return false;</span>
+    	}
+    	
+<span class="pc bpc" id="L67" title="1 of 4 branches missed.">    	if (!isDigit(sYear) || sYear.length() != 4) {</span>
+<span class="fc" id="L68">    		labelT2SYWarning.setText(&quot;Start year should be an integer with 4 digits&quot;);</span>
+<span class="fc" id="L69">    		labelT2SYWarning.setVisible(true);</span>
+<span class="fc" id="L70">    		buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L71">    		return false;</span>
+    	}
+    	
+<span class="fc" id="L74">    	int sYearInt = Integer.parseInt(sYear);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">    	if (isInBound(textfieldT2EYear.getText())) {	// if there is already a valid end year input, start year should be within 1880 to that endyear</span>
+<span class="pc bpc" id="L76" title="1 of 4 branches missed.">    		if (sYearInt &gt; Integer.parseInt(textfieldT2EYear.getText()) || sYearInt &lt; 1880) {</span>
+<span class="fc" id="L77">        		labelT2SYWarning.setText(&quot;Start year should be an integer within 1880 to end year&quot;);</span>
+<span class="fc" id="L78">        		labelT2SYWarning.setVisible(true);</span>
+<span class="fc" id="L79">        		buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L80">        		return false;</span>
+    		}
+    	}
+    	else {	// if no, check whether start year is within 1880-2019
+<span class="pc bpc" id="L84" title="3 of 4 branches missed.">    		if (sYearInt &lt; 1880 || sYearInt &gt; 2019) {</span>
+<span class="fc" id="L85">        		labelT2SYWarning.setText(&quot;Start year should be an integer within 1880 to 2019&quot;);</span>
+<span class="fc" id="L86">        		labelT2SYWarning.setVisible(true);</span>
+<span class="fc" id="L87">        		buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L88">        		return false;</span>
+    		}
+    	}
+    		
+<span class="fc" id="L92">    	labelT2SYWarning.setVisible(false);</span>
+<span class="fc" id="L93">    	return true;</span>
+    }
+
+    private boolean checkT2EY() {
+<span class="fc" id="L97">    	String eYear = textfieldT2EYear.getText();</span>
+    	
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    	if (eYear.isEmpty()) {</span>
+<span class="fc" id="L100">			labelT2EYWarning.setVisible(false);</span>
+<span class="fc" id="L101">			buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L102">			return false;</span>
+    	}
+    	
+<span class="pc bpc" id="L105" title="1 of 4 branches missed.">    	if (!isDigit(eYear) || eYear.length() != 4) {</span>
+<span class="fc" id="L106">    		labelT2EYWarning.setText(&quot;End year should be an integer with 4 digits&quot;);</span>
+<span class="fc" id="L107">    		labelT2EYWarning.setVisible(true);</span>
+<span class="fc" id="L108">    		buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L109">    		return false;</span>
+    	}
+    	
+<span class="fc" id="L112">    	int eYearInt = Integer.parseInt(eYear);</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">    	if (isInBound(textfieldT2SYear.getText())) {	// if there is already a valid start year input, end year should be within start year to 2019</span>
+<span class="pc bpc" id="L114" title="1 of 4 branches missed.">    		if (eYearInt &lt; Integer.parseInt(textfieldT2SYear.getText()) || eYearInt &gt; 2019) {</span>
+<span class="fc" id="L115">        		labelT2EYWarning.setText(&quot;End year should be an integer within start year to 2019&quot;);</span>
+<span class="fc" id="L116">        		labelT2EYWarning.setVisible(true);</span>
+<span class="fc" id="L117">        		buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L118">        		return false;</span>
+    		}
+    	}
+    	else {	// if no, check whether start year is within 1880-2019
+<span class="pc bpc" id="L122" title="2 of 4 branches missed.">    		if (eYearInt &lt; 1880 || eYearInt &gt; 2019) {</span>
+<span class="fc" id="L123">        		labelT2EYWarning.setText(&quot;End year should be an integer within 1880 to 2019&quot;);</span>
+<span class="fc" id="L124">        		labelT2EYWarning.setVisible(true);</span>
+<span class="fc" id="L125">        		buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L126">        		return false;</span>
+    		}
+    	}
+    		
+<span class="fc" id="L130">    	labelT2EYWarning.setVisible(false);</span>
+<span class="fc" id="L131">    	return true;</span>
+    }
+
+    private boolean checkT2Rank() {
+<span class="fc" id="L135">    	String rank = textfieldT2Rank.getText();</span>
+    	
+<span class="fc bfc" id="L137" title="All 2 branches covered.">    	if (rank.isEmpty()) {</span>
+<span class="fc" id="L138">    		labelT2RankWarning.setVisible(false);</span>
+<span class="fc" id="L139">    		buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L140">    		return false;</span>
+    	}
+    	
+<span class="fc bfc" id="L143" title="All 2 branches covered.">    	if (rank.charAt(0) == '0') {</span>
+<span class="fc" id="L144">    		labelT2RankWarning.setVisible(true);</span>
+<span class="fc" id="L145">    		labelT2RankWarning.setText(&quot;Rank should not start with 0&quot;);</span>
+<span class="fc" id="L146">    		buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L147">    		return false;</span>
+    	}
+    	
+<span class="fc bfc" id="L150" title="All 2 branches covered.">    	if (!isDigit(rank)) {</span>
+<span class="fc" id="L151">    		labelT2RankWarning.setVisible(true);</span>
+<span class="fc" id="L152">    		labelT2RankWarning.setText(&quot;Rank should be an integer with fewer than 9 digits&quot;);</span>
+<span class="fc" id="L153">    		buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L154">    		return false;</span>
+    	}
+	
+<span class="pc bpc" id="L157" title="2 of 8 branches missed.">    	if (checkT2SY() &amp;&amp; checkT2EY() &amp;&amp; (radioButtonT2M.isSelected() || radioButtonT2F.isSelected())) { // start year, end year, gender are correctly inputed      	</span>
+<span class="fc" id="L158">    		int sYear = Integer.parseInt(textfieldT2SYear.getText());</span>
+<span class="fc" id="L159">    		int eYear = Integer.parseInt(textfieldT2EYear.getText());</span>
+<span class="fc" id="L160">    		int rankInt = Integer.parseInt(textfieldT2Rank.getText());</span>
+<span class="fc bfc" id="L161" title="All 2 branches covered.">    		char gender = radioButtonT2M.isSelected() ? 'M' : 'F';</span>
+    		
+<span class="fc bfc" id="L163" title="All 2 branches covered.">    		for (int year = sYear; year &lt;= eYear; year++) {</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">    			if (rankInt &gt; TaskGeneral.getTotalNames(year, gender)) {</span>
+<span class="nc" id="L165">    				labelT2RankWarning.setVisible(true);</span>
+<span class="nc" id="L166">    				labelT2RankWarning.setText(&quot;Rank too large. Some year does not have that many names&quot;);</span>
+<span class="nc" id="L167">    				return false;</span>
+    			}
+    		}
+<span class="fc" id="L170">    		labelT2RankWarning.setVisible(false);</span>
+<span class="fc" id="L171">    		return true;</span>
+    	}
+
+<span class="fc" id="L174">    	labelT2RankWarning.setVisible(false);  </span>
+<span class="fc" id="L175">    	buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L176">    	return false;</span>
+    }
+
+    /**
+     * Check all the inputs.
+     * If they are all valid, enable the generate button.
+     * Otherwise, disable it.
+     */
+    @Override
+    public void check() {
+<span class="fc" id="L186">    	boolean sy = checkT2SY();</span>
+<span class="fc" id="L187">    	boolean ey = checkT2EY();</span>
+<span class="fc" id="L188">    	boolean rank = checkT2Rank();</span>
+<span class="pc bpc" id="L189" title="1 of 6 branches missed.">    	if (sy &amp;&amp; ey &amp;&amp; rank) {</span>
+<span class="fc" id="L190">    		buttonT2Generate.setDisable(false);</span>
+    	}
+<span class="fc" id="L192">    	else buttonT2Generate.setDisable(true);</span>
+<span class="fc" id="L193">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

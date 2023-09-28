@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Task2.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PopNames3111</a> &gt; <a href="index.source.html" class="el_package">comp3111.popnames</a> &gt; <span class="el_source">Task2.java</span></div><h1>Task2.java</h1><pre class="source lang-java linenums">package comp3111.popnames;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import org.apache.commons.csv.*;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Group;
+import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.PieChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Text;
+
+/**
+ * Class to process task2
+ * @author WANG, Zeyu
+ */
+public class Task2 extends TaskGeneral {	
+	// helper class to store information
+	private class Name implements Comparable&lt;Name&gt;{
+		private SimpleStringProperty name;
+		private SimpleIntegerProperty frequency;
+		private SimpleIntegerProperty occurrences;
+		private SimpleDoubleProperty percentage;
+		
+<span class="fc" id="L39">		public Name(String name, int frequency, int occurrences) {</span>
+<span class="fc" id="L40">			this.name = new SimpleStringProperty(name);</span>
+<span class="fc" id="L41">			this.frequency = new SimpleIntegerProperty(frequency);</span>
+<span class="fc" id="L42">			this.occurrences = new SimpleIntegerProperty(occurrences);</span>
+<span class="fc" id="L43">		}</span>
+		
+<span class="fc" id="L45">		public void setPercentage(double perc) { this.percentage = new SimpleDoubleProperty(perc); }</span>
+<span class="fc" id="L46">		public String getName() { return this.name.get(); }</span>
+<span class="fc" id="L47">		public int getFreq() { return this.frequency.get(); }</span>
+<span class="fc" id="L48">		public int getOccur() { return this.occurrences.get(); }</span>
+<span class="fc" id="L49">		public double getPercentage() { return this.percentage.get(); }</span>
+<span class="nc" id="L50">		public SimpleStringProperty nameProperty() { return this.name; }</span>
+<span class="nc" id="L51">		public SimpleIntegerProperty freqProperty() { return this.frequency; }</span>
+<span class="nc" id="L52">		public SimpleIntegerProperty occurProperty() { return this.occurrences; }</span>
+<span class="nc" id="L53">		public SimpleStringProperty percProperty() { return new SimpleStringProperty(this.percentage.get() + &quot;%&quot;); }</span>
+		@Override
+		public int compareTo(Name name) {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (this.getFreq() &gt; name.getFreq()) return 1;</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">			else if (this.getFreq() == name.getFreq()) {	// same freq, sort by alphabetical order</span>
+<span class="fc" id="L58">				int diff = this.getName().compareTo(name.getName());</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">				if (diff &lt; 0) return 1;</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">				else if (diff == 0) return 0;</span>
+<span class="fc" id="L61">				else return -1;</span>
+			}
+<span class="fc" id="L63">			else return -1;</span>
+		}
+	}
+	
+	private int startYear;
+	private int endYear;
+	private int rank;
+	private char gender;
+	private ArrayList&lt;Name&gt; nameInfo;
+	
+	/**
+	 * Construct a Task2 object with following parameters
+	 * @param startYear Start year of user's interested time period
+	 * @param endYear End year of user's interested time period
+	 * @param rank User's interested rank
+	 * @param gender User's interested gender
+	 */
+<span class="fc" id="L80">	public Task2(int startYear, int endYear, int rank, char gender) {</span>
+<span class="fc" id="L81">		this.startYear = startYear;</span>
+<span class="fc" id="L82">		this.endYear = endYear;</span>
+<span class="fc" id="L83">		this.rank = rank;</span>
+<span class="fc" id="L84">		this.gender = gender;</span>
+<span class="fc" id="L85">		this.nameInfo = new ArrayList&lt;Name&gt;();</span>
+<span class="fc" id="L86">		getNameInfo();</span>
+<span class="fc" id="L87">	}</span>
+	
+	// Find all the required information for this task
+	private void getNameInfo() {
+<span class="fc" id="L91">		CSVRecord[] popRecords = new CSVRecord[endYear - startYear + 1]; // find all k'th popular name in the period</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">		for (int year = startYear; year &lt;= endYear; year++) {</span>
+<span class="fc" id="L93">			popRecords[year - startYear] = getRecord(year, rank, gender);</span>
+		}
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		for (int i = 0; i != popRecords.length; i++) {</span>
+<span class="fc" id="L96">			int freq = 0;</span>
+<span class="fc" id="L97">			int occur = 0;</span>
+<span class="fc" id="L98">			boolean newName = true;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">			for (int j = 0; j != popRecords.length; j++) {</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">				if (popRecords[i].get(0).equals(popRecords[j].get(0))) {</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">					if (j &lt; i) {</span>
+<span class="fc" id="L102">						newName = false;	// name already dealt</span>
+<span class="fc" id="L103">						break;</span>
+					}
+					else {
+<span class="fc" id="L106">						freq++;</span>
+<span class="fc" id="L107">						occur += Integer.parseInt(popRecords[j].get(2));</span>
+					}
+				}
+			}
+<span class="fc bfc" id="L111" title="All 2 branches covered.">			if (newName) {</span>
+<span class="fc" id="L112">				nameInfo.add(new Name(popRecords[i].get(0), freq, occur));</span>
+			}
+		}
+<span class="fc" id="L115">		nameInfo.sort(Comparator.reverseOrder());</span>
+<span class="fc" id="L116">		int totalOccur = 0;</span>
+<span class="fc bfc" id="L117" title="All 2 branches covered.">		for (Name name : nameInfo) {</span>
+<span class="fc" id="L118">			totalOccur += name.getOccur();</span>
+<span class="fc" id="L119">		}</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">		for (Name name : nameInfo) {</span>
+<span class="fc" id="L121">			name.setPercentage(Double.parseDouble(String.format(&quot;%.1f&quot;, (double)name.getOccur() / (double)totalOccur * 100.0)));</span>
+<span class="fc" id="L122">		}</span>
+<span class="fc" id="L123">		Name total = new Name(&quot;TOTAL&quot;, endYear-startYear+1, totalOccur);</span>
+<span class="fc" id="L124">		total.setPercentage(100.0);</span>
+<span class="fc" id="L125">		nameInfo.add(total);</span>
+<span class="fc" id="L126">	}</span>
+	
+	/**
+	 * Formulate a string result.
+	 * @return A string to be added to the text console in the GUI
+	 */
+	public String getSummary() {
+<span class="fc" id="L133">		String oReport = &quot;&quot;;</span>
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		String kid = (gender == 'M') ? &quot;boys&quot; : &quot;girls&quot;;</span>
+<span class="fc bfc" id="L135" title="All 2 branches covered.">		String oGender = (gender == 'M') ? &quot;male&quot; : &quot;female&quot;;</span>
+<span class="fc" id="L136">		Name first = nameInfo.get(0);</span>
+<span class="fc" id="L137">		oReport += String.format(&quot;Summary:\n%s has hold the %d-th rank most often for a total of %d times among the names registered for baby %s born in the period from %d to %d.&quot;,</span>
+<span class="fc" id="L138">				first.getName(), rank, first.getFreq(), kid, startYear, endYear);</span>
+<span class="fc" id="L139">		oReport += String.format(&quot; The total number of occurrences of %s is %d,&quot;, first.getName(), first.getOccur());</span>
+<span class="fc" id="L140">		oReport += String.format(&quot; which represents %.1f%% of total %s births at the %d-th rank in the period from %d to %d。&quot;, first.getPercentage(), oGender, rank, startYear, endYear);</span>
+<span class="fc" id="L141">		return oReport;</span>
+	}
+	
+	/**
+	 * Formulate a scene with a table, a bar chart and a pie chart.
+	 * @return A scene to be added to the pop window stage after user clicking generate button
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public Scene getTableCharts() {
+<span class="fc" id="L150">		HBox root = new HBox();	// A layout for table and charts</span>
+<span class="fc" id="L151">		Scene t2Scene = new Scene (root);</span>
+		
+		// Create a table
+<span class="fc" id="L154">		ObservableList&lt;Name&gt; tableData = FXCollections.observableArrayList(nameInfo);</span>
+<span class="fc" id="L155">		TableView&lt;Name&gt; table = new TableView&lt;Name&gt;(tableData);</span>
+<span class="fc" id="L156">		TableColumn&lt;Name, String&gt; nameCol = new TableColumn&lt;&gt;(&quot;Name&quot;);</span>
+<span class="fc" id="L157">		TableColumn&lt;Name, Number&gt; freqCol = new TableColumn&lt;&gt;(&quot;Frequency&quot;);</span>
+<span class="fc" id="L158">		TableColumn&lt;Name, Number&gt; occurCol = new TableColumn&lt;&gt;(&quot;Occurences&quot;);</span>
+<span class="fc" id="L159">		TableColumn&lt;Name, String&gt; percCol = new TableColumn&lt;&gt;(&quot;Percentage&quot;);</span>
+<span class="pc" id="L160">		nameCol.setCellValueFactory(cellData -&gt; cellData.getValue().nameProperty());</span>
+<span class="pc" id="L161">		freqCol.setCellValueFactory(cellData -&gt; cellData.getValue().freqProperty());</span>
+<span class="pc" id="L162">		occurCol.setCellValueFactory(cellData -&gt; cellData.getValue().occurProperty());</span>
+<span class="pc" id="L163">		percCol.setCellValueFactory(cellData -&gt; cellData.getValue().percProperty());</span>
+<span class="fc" id="L164">		table.getColumns().setAll(nameCol, freqCol, occurCol, percCol);</span>
+		//table.setPrefHeight(200);
+		
+		// Create a bar chart
+<span class="fc" id="L168">		CategoryAxis xAxis = new CategoryAxis();</span>
+<span class="fc" id="L169">		xAxis.setLabel(&quot;Name&quot;);</span>
+<span class="fc" id="L170">		NumberAxis yAxis = new NumberAxis();</span>
+<span class="fc" id="L171">		yAxis.setLabel(&quot;Occurences&quot;);</span>
+<span class="fc" id="L172">		BarChart&lt;String, Number&gt; barChart = new BarChart&lt;&gt;(xAxis, yAxis);</span>
+<span class="fc" id="L173">		XYChart.Series&lt;String, Number&gt; series = new XYChart.Series&lt;&gt;();</span>
+<span class="fc bfc" id="L174" title="All 2 branches covered.">		for (int i = 0; i != nameInfo.size() - 1; i++) {</span>
+<span class="fc" id="L175">			XYChart.Data&lt;String, Number&gt; barData = new XYChart.Data&lt;&gt;(nameInfo.get(i).getName(), nameInfo.get(i).getOccur());</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">			if (nameInfo.size() &lt;= 10) {</span>
+<span class="fc" id="L177">		        StackPane node = new StackPane();</span>
+<span class="fc" id="L178">		        Text text = new Text(nameInfo.get(i).getOccur() + &quot;&quot;);</span>
+<span class="fc" id="L179">		        text.setFill(Color.WHITE);</span>
+<span class="fc" id="L180">		        Group group = new Group(text);</span>
+<span class="fc" id="L181">		        StackPane.setAlignment(group, Pos.TOP_CENTER);</span>
+<span class="fc" id="L182">		        StackPane.setMargin(group, new Insets(0, 0, 5, 0));</span>
+<span class="fc" id="L183">		        node.getChildren().add(group);</span>
+<span class="fc" id="L184">		        barData.setNode(node);</span>
+			}        
+<span class="fc" id="L186">			series.getData().add(barData);</span>
+		}
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">		if (nameInfo.size() &lt;= 10) barChart.setPrefWidth(75 * nameInfo.size());</span>
+<span class="nc" id="L189">		else barChart.setPrefWidth(800);</span>
+<span class="fc" id="L190">		barChart.getData().add(series);</span>
+<span class="fc" id="L191">		barChart.setLegendVisible(false);</span>
+		
+		// Create a pie chart
+<span class="fc" id="L194">		PieChart pieChart = new PieChart();</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">		for (int i = 0; i != nameInfo.size() - 1; i++)</span>
+<span class="fc" id="L196">			pieChart.getData().add(new PieChart.Data(nameInfo.get(i).getName(), nameInfo.get(i).getOccur()));</span>
+<span class="fc" id="L197">		pieChart.setPrefHeight(nameInfo.size() / 5 * 25 + 400);</span>
+		
+<span class="fc" id="L199">		root.getChildren().addAll(table, barChart, pieChart);</span>
+<span class="fc" id="L200">		return t2Scene;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

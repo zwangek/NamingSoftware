@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Task5.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PopNames3111</a> &gt; <a href="index.source.html" class="el_package">comp3111.popnames</a> &gt; <span class="el_source">Task5.java</span></div><h1>Task5.java</h1><pre class="source lang-java linenums">package comp3111.popnames;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+
+import org.apache.commons.csv.CSVRecord;
+
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.Scene;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
+import javafx.scene.chart.XYChart.Data;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.layout.HBox;
+
+/**
+ * Task 5 handler.
+ * Will be initiated after T5InputChecker has checked all inputs.
+ * @author WANG, Zeyu
+ *
+ */
+public class Task5 extends TaskGeneral {
+	// A helper class to store information of table
+	private class Name implements Comparable&lt;Name&gt;{
+		private SimpleStringProperty name;
+		private SimpleIntegerProperty frequency;
+		private SimpleIntegerProperty occurrences;
+		private SimpleDoubleProperty percentage;
+		
+<span class="fc" id="L37">		public Name(String name, int frequency, int occurrences) {</span>
+<span class="fc" id="L38">			this.name = new SimpleStringProperty(name);</span>
+<span class="fc" id="L39">			this.frequency = new SimpleIntegerProperty(frequency);</span>
+<span class="fc" id="L40">			this.occurrences = new SimpleIntegerProperty(occurrences);</span>
+<span class="fc" id="L41">		}</span>
+		
+<span class="fc" id="L43">		public void setPercentage(double perc) { this.percentage = new SimpleDoubleProperty(perc); }</span>
+<span class="fc" id="L44">		public String getName() { return this.name.get(); }</span>
+<span class="fc" id="L45">		public int getFreq() { return this.frequency.get(); }</span>
+<span class="fc" id="L46">		public int getOccur() { return this.occurrences.get(); }</span>
+		// public double getPercentage() { return this.percentage.get(); }
+<span class="nc" id="L48">		public SimpleStringProperty nameProperty() { return this.name; }</span>
+<span class="nc" id="L49">		public SimpleIntegerProperty freqProperty() { return this.frequency; }</span>
+<span class="nc" id="L50">		public SimpleIntegerProperty occurProperty() { return this.occurrences; }</span>
+<span class="nc" id="L51">		public SimpleStringProperty percProperty() { return new SimpleStringProperty(this.percentage.get() + &quot;%&quot;); }</span>
+		@Override
+		public int compareTo(Name name) {
+<span class="fc bfc" id="L54" title="All 2 branches covered.">			if (this.getFreq() &gt; name.getFreq()) return 1;</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">			else if (this.getFreq() == name.getFreq()) {	// same freq, sort by alphabetical order</span>
+<span class="fc" id="L56">				int diff = this.getName().compareTo(name.getName());</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">				if (diff &lt; 0) return 1;</span>
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">				else if (diff == 0) return 0;</span>
+<span class="fc" id="L59">				else return -1;</span>
+			}
+<span class="fc" id="L61">			else return -1;</span>
+		}
+	}
+	
+	private String iName;
+	private char iGender;
+	private int iYOB;
+	private char iGenderMate;
+	private int[] myRecentRanks;
+	private ArrayList&lt;Name&gt; nameInfo;
+	private String mateName;
+	private int[] mateRecentRanks;
+	private int startYear;
+	private int endYear;
+	
+	/**
+	 * Construct a Task5 object with following parameters
+	 * @param iName user's name
+	 * @param iGender user's gender
+	 * @param iYOB user's year of birth
+	 * @param iGenderMate soul mate gender that the user desire
+	 * @param maxAgeDifference the max age difference that the user wants between the user and the soul mate
+	 * @param older user's preference on the age of the soul mate. False for younger true for older
+	 */
+<span class="fc" id="L85">	public Task5(String iName, char iGender, int iYOB, char iGenderMate, int maxAgeDifference, boolean older) {</span>
+<span class="fc" id="L86">		this.iName = iName.substring(0, 1).toUpperCase() + iName.substring(1).toLowerCase();</span>
+<span class="fc" id="L87">		this.iGender = iGender;</span>
+<span class="fc" id="L88">		this.iYOB = iYOB;</span>
+<span class="fc" id="L89">		this.iGenderMate = iGenderMate;</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		if (older) {</span>
+<span class="fc" id="L92">			startYear = iYOB;</span>
+<span class="fc" id="L93">			endYear = iYOB + maxAgeDifference;</span>
+		} else {
+<span class="fc" id="L95">			startYear = iYOB - maxAgeDifference;</span>
+<span class="fc" id="L96">			endYear = iYOB;</span>
+		}
+<span class="fc" id="L98">		myRecentRanks = new int[endYear - startYear + 1];</span>
+<span class="fc" id="L99">		mateRecentRanks = new int[endYear - startYear + 1];</span>
+<span class="fc" id="L100">		nameInfo = new ArrayList&lt;Name&gt;();</span>
+<span class="fc" id="L101">		setT5X2Info();</span>
+
+<span class="fc" id="L103">	}</span>
+	
+	private void setT5X2Info() {
+		// int totalFreq = 0;
+
+		// Find name with similar rank in every year in the period
+<span class="fc" id="L109">		ArrayList&lt;CSVRecord&gt; popRecords = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		for (int year = startYear; year &lt;= endYear; year++) {</span>
+<span class="fc" id="L111">			int myRank = getRank(year, iName, iGender);</span>
+<span class="fc" id="L112">			myRecentRanks[year - startYear] = myRank;	// my ranks</span>
+			// get close ranks
+			int[] consideredRanks;
+<span class="fc" id="L115">			int range = myRank / 100 + 2;</span>
+			// same gender, close ranks are myRank - range till myRank + range except myRank
+<span class="fc bfc" id="L117" title="All 2 branches covered.">			if (iGender == iGenderMate) {</span>
+<span class="fc" id="L118">				consideredRanks = new int[2 * range];</span>
+				int start;
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">				if (myRank - range &lt;= 0) start = 1;</span>
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">				else if (myRank + range &gt; getTotalNames(year, iGenderMate))</span>
+<span class="nc" id="L122">					start = getTotalNames(year, iGender) - range * 2;</span>
+<span class="fc" id="L123">				else start = myRank - range;</span>
+				
+<span class="fc bfc" id="L125" title="All 2 branches covered.">				for (int i = 0; i != consideredRanks.length + 1; i++) {</span>
+<span class="fc bfc" id="L126" title="All 2 branches covered.">					if (start + i == myRank) continue;</span>
+<span class="fc bfc" id="L127" title="All 2 branches covered.">					else if (start + i &lt; myRank) consideredRanks[i] = start + i;</span>
+<span class="fc" id="L128">					else consideredRanks[i - 1] = start + i;</span>
+				}
+			// different gender
+<span class="fc" id="L131">			} else {</span>
+<span class="fc" id="L132">				consideredRanks = new int[2 * range + 1];</span>
+				int start;
+<span class="pc bpc" id="L134" title="1 of 2 branches missed.">				if (myRank - range &lt;= 0) start = 1;</span>
+<span class="pc bpc" id="L135" title="1 of 2 branches missed.">				else if (myRank + range &gt; getTotalNames(year, iGenderMate))</span>
+<span class="nc" id="L136">					start = getTotalNames(year, iGenderMate) - range * 2;</span>
+<span class="fc" id="L137">				else start = myRank - range;</span>
+				
+<span class="fc bfc" id="L139" title="All 2 branches covered.">				for (int i = 0; i != consideredRanks.length; i++) {</span>
+<span class="fc" id="L140">					consideredRanks[i] = start + i;</span>
+				}
+			}
+			
+			// add record with close ranks
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			for (int i = 0; i != consideredRanks.length; i++) {</span>
+<span class="fc" id="L146">				popRecords.add(getRecord(year, consideredRanks[i], iGenderMate));</span>
+			}
+		}
+<span class="fc bfc" id="L149" title="All 2 branches covered.">		for (int i = 0; i != popRecords.size(); i++) {</span>
+<span class="fc" id="L150">			int freq = 0;</span>
+<span class="fc" id="L151">			int occur = 0;</span>
+<span class="fc" id="L152">			boolean newName = true;</span>
+<span class="fc bfc" id="L153" title="All 2 branches covered.">			for (int j = 0; j != popRecords.size(); j++) {</span>
+<span class="fc bfc" id="L154" title="All 2 branches covered.">				if (popRecords.get(i).get(0).equals(popRecords.get(j).get(0))) {</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">					if (j &lt; i) {</span>
+<span class="fc" id="L156">						newName = false;	// name already dealt</span>
+<span class="fc" id="L157">						break;</span>
+					}
+					else {
+<span class="fc" id="L160">						freq++;</span>
+<span class="fc" id="L161">						occur += Integer.parseInt(popRecords.get(j).get(2));</span>
+					}
+				}
+			}
+<span class="fc bfc" id="L165" title="All 2 branches covered.">			if (newName) {</span>
+<span class="fc" id="L166">				nameInfo.add(new Name(popRecords.get(i).get(0), freq, occur));</span>
+			}
+		}
+<span class="fc" id="L169">		nameInfo.sort(Comparator.reverseOrder());</span>
+		/*
+		// fill total info
+
+		Name total = new Name(&quot;TOTAL&quot;, totalFreq, totalOccur);
+		total.setPercentage(100.0);
+		nameInfo.add(total);
+		*/
+<span class="fc" id="L177">		int totalOccur = 0;</span>
+
+<span class="fc bfc" id="L179" title="All 2 branches covered.">		for (Name name : nameInfo) {</span>
+<span class="fc" id="L180">			totalOccur += name.getOccur();</span>
+<span class="fc" id="L181">		}</span>
+		
+<span class="fc bfc" id="L183" title="All 2 branches covered.">		for (Name name : nameInfo) {</span>
+<span class="fc" id="L184">			name.setPercentage(Double.parseDouble(String.format(&quot;%.1f&quot;, (double)name.getOccur() / (double)totalOccur * 100.0)));</span>
+<span class="fc" id="L185">		}</span>
+
+		
+		// Fill matched mate's information
+<span class="fc" id="L189">		mateName = nameInfo.get(0).getName();</span>
+<span class="fc bfc" id="L190" title="All 2 branches covered.">		for (int i = 0; i != mateRecentRanks.length; i++) {</span>
+<span class="fc" id="L191">			mateRecentRanks[i] = getRank(i+startYear, mateName, iGenderMate);</span>
+		}
+<span class="fc" id="L193">	}</span>
+	
+	/**
+	 * Simple algorithm
+	 * @return the story of the most pupular name for mate gender in my birth year
+	 */
+	public String algorithmT5X1() {
+<span class="pc bpc" id="L200" title="1 of 2 branches missed.">		String oGender = iGenderMate == 'M' ? &quot;male&quot; : &quot;female&quot;;</span>
+<span class="fc" id="L201">		String oName = TaskGeneral.getRecord(iYOB, 1, iGenderMate).get(0);</span>
+<span class="fc" id="L202">		return String.format(&quot;A simple recommendation: %s\n%s is the most popular %s name in your birth year %d.\n&quot;, oName, oName, oGender, iYOB);</span>
+	}
+	
+	/**
+	 * Complicated algorithm
+	 * @return
+	 */
+	public String summaryT5X2() {
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">		if (mateName == null) return &quot;\nFailure in finding a soul mate name.\n&quot;;</span>
+<span class="fc bfc" id="L211" title="All 2 branches covered.">		String myGender = iGender == 'M' ? &quot;male&quot; : &quot;female&quot;;</span>
+<span class="pc bpc" id="L212" title="1 of 2 branches missed.">		String mateGender = iGenderMate == 'M' ? &quot;male&quot; : &quot;female&quot;;</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">		String preference = endYear &gt;= startYear ? &quot;earlier&quot; : &quot;later&quot;;</span>
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">		int maxAD = endYear &gt;= startYear ? endYear - startYear : startYear - endYear;</span>
+<span class="fc" id="L215">		String story = String.format(&quot;\nA slightly more complicated recommendation: %s.\n&quot;, mateName);</span>
+<span class="fc" id="L216">		story += String.format(&quot;Among all names for people born at most %d years %s than your birth year %d,&quot;, maxAD, preference, iYOB);</span>
+<span class="fc" id="L217">		story += String.format(&quot; %s name %s and your %s name %s have the most number of similar rank (%d times) in the period %d~%d.&quot;,</span>
+<span class="fc" id="L218">				mateGender, mateName, myGender, iName, nameInfo.get(0).getFreq(), startYear, endYear);</span>
+<span class="fc" id="L219">		story += String.format(&quot; Your name is as 'RARE' as this soulmate name. Find a %s around you and you can definately become good friends.&quot;, mateName);</span>
+<span class="fc" id="L220">		return story;</span>
+	}
+	
+	/**
+	 * Get a scene to be shown in new window after running T5X2
+	 * @return A scene containing table and chart
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public Scene getSceneT5X2() {
+<span class="fc" id="L229">		HBox root = new HBox();</span>
+<span class="fc" id="L230">		Scene sc = new Scene(root);</span>
+		
+		// Create a table
+<span class="fc" id="L233">		ObservableList&lt;Name&gt; tableData = FXCollections.observableArrayList(nameInfo);</span>
+<span class="fc" id="L234">		TableView&lt;Name&gt; table = new TableView&lt;Name&gt;(tableData);</span>
+<span class="fc" id="L235">		TableColumn&lt;Name, String&gt; nameCol = new TableColumn&lt;&gt;(&quot;Name&quot;);</span>
+<span class="fc" id="L236">		TableColumn&lt;Name, Number&gt; freqCol = new TableColumn&lt;&gt;(&quot;Frequency&quot;);</span>
+<span class="fc" id="L237">		TableColumn&lt;Name, Number&gt; occurCol = new TableColumn&lt;&gt;(&quot;Occurences&quot;);</span>
+<span class="fc" id="L238">		TableColumn&lt;Name, String&gt; percCol = new TableColumn&lt;&gt;(&quot;Percentage&quot;);</span>
+<span class="pc" id="L239">		nameCol.setCellValueFactory(cellData -&gt; cellData.getValue().nameProperty());</span>
+<span class="pc" id="L240">		freqCol.setCellValueFactory(cellData -&gt; cellData.getValue().freqProperty());</span>
+<span class="pc" id="L241">		occurCol.setCellValueFactory(cellData -&gt; cellData.getValue().occurProperty());</span>
+<span class="pc" id="L242">		percCol.setCellValueFactory(cellData -&gt; cellData.getValue().percProperty());</span>
+<span class="fc" id="L243">		table.getColumns().setAll(nameCol, freqCol, occurCol, percCol);</span>
+		
+		// Create a line chart
+<span class="fc" id="L246">		CategoryAxis xAxis = new CategoryAxis();</span>
+<span class="fc" id="L247">		xAxis.setLabel(&quot;Year&quot;);</span>
+<span class="fc" id="L248">		NumberAxis yAxis = new NumberAxis();</span>
+<span class="fc" id="L249">		yAxis.setLabel(&quot;Rank&quot;);</span>
+<span class="fc" id="L250">		XYChart.Series&lt;String, Number&gt; myData = new XYChart.Series&lt;String, Number&gt;();</span>
+<span class="fc" id="L251">		myData.setName(&quot;Rank of Your Name&quot;);</span>
+<span class="fc" id="L252">		XYChart.Series&lt;String, Number&gt; mateData = new XYChart.Series&lt;String, Number&gt;();</span>
+<span class="fc" id="L253">		mateData.setName(&quot;Rank of Soul Mate Name&quot;);</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">		for (int year = startYear; year &lt;= endYear; year++) {</span>
+<span class="fc" id="L255">			myData.getData().add(new Data&lt;String, Number&gt;(String.valueOf(year), myRecentRanks[year-startYear]));</span>
+<span class="fc" id="L256">			mateData.getData().add(new Data&lt;String, Number&gt;(String.valueOf(year), mateRecentRanks[year-startYear]));</span>
+		}
+<span class="fc" id="L258">		LineChart&lt;String, Number&gt; lineChart = new LineChart&lt;&gt;(xAxis, yAxis);</span>
+<span class="fc" id="L259">		lineChart.getData().addAll(myData, mateData);</span>
+		
+<span class="fc" id="L261">		root.getChildren().addAll(table, lineChart);</span>
+<span class="fc" id="L262">		return sc;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

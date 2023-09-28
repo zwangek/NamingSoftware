@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InputCheckerGeneral.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PopNames3111</a> &gt; <a href="index.source.html" class="el_package">comp3111.popnames</a> &gt; <span class="el_source">InputCheckerGeneral.java</span></div><h1>InputCheckerGeneral.java</h1><pre class="source lang-java linenums">package comp3111.popnames;
+/**
+ * Base class for input checker. Provide utilities. 
+ * @author WANG, Zeyu
+ *
+ */
+<span class="fc" id="L7">public abstract class InputCheckerGeneral {    </span>
+	/**
+	 * Check whether the str is a number and will not overflow
+	 * It will not check (return true) empty condition.
+	 * @param str string to be checked
+	 * @return True if str is a number and will not overflow. Otherwise, false.
+	 */
+	public static boolean isDigit (String str) {
+		// empty
+<span class="fc bfc" id="L16" title="All 2 branches covered.">		if (str.isEmpty()) return false;</span>
+		// check length
+<span class="fc bfc" id="L18" title="All 2 branches covered.">		if (str.length() &gt; 9) return false;</span>
+		// check char
+<span class="fc bfc" id="L20" title="All 2 branches covered.">		for (int i = 0; i != str.length(); i++) {</span>
+<span class="fc bfc" id="L21" title="All 4 branches covered.">			if (str.charAt(i) &lt; '0' || str.charAt(i) &gt; '9') return false;</span>
+		}
+<span class="fc" id="L23">		return true;</span>
+	}
+	
+	/**
+	 * Check whether str is a valid number and is between 1880-2019
+	 * @param str string to be checked.
+	 * @return True if str is a valid number and is between 1880*2019
+	 */
+	public static boolean isInBound (String str) {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">		if (str.isEmpty()) return false;</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">		if (!isDigit(str)) return false;</span>
+<span class="fc" id="L34">		int val = Integer.parseInt(str);</span>
+<span class="fc bfc" id="L35" title="All 4 branches covered.">		if (val &lt; 1880 || val &gt; 2019) return false;</span>
+<span class="fc" id="L36">		return true;</span>
+	}
+	
+	/**
+	 * Check whether str is consists of english characters only.
+	 * It will capitalized the first letter if it is in lower case.
+	 * @param str string to be checked
+	 * @return True if str is consists of 'A'-'Z' for the first letter and 'a'-'z' for the rest.
+	 */
+	public static boolean isPureChars (String str) {
+<span class="fc bfc" id="L46" title="All 2 branches covered.">		if (str.isEmpty()) return false;</span>
+<span class="fc" id="L47">		char firstChar = str.charAt(0);</span>
+<span class="pc bpc" id="L48" title="2 of 8 branches missed.">		if (firstChar &lt; 'A' || firstChar &gt; 'z' || (firstChar &gt;= 91 &amp;&amp; firstChar &lt;= 96)) return false;</span>
+		// capitalized firstChar
+<span class="pc bpc" id="L50" title="1 of 4 branches missed.">		if (firstChar &gt;= 'a' &amp;&amp; firstChar &lt;= 'z') str = String.valueOf((char)(firstChar-32)) + str.substring(1).toLowerCase();</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		for (int i = 1; i != str.length(); i++) {</span>
+<span class="pc bpc" id="L52" title="1 of 4 branches missed.">			if (str.charAt(i) &lt; 'a' || str.charAt(i) &gt; 'z') return false;</span>
+		}
+<span class="fc" id="L54">		return true;</span>
+	}
+	
+	/**
+	 * A concrete subclass can use this to run its checking procedure.
+	 */
+	public abstract void check();
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Task6.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PopNames3111</a> &gt; <a href="index.source.html" class="el_package">comp3111.popnames</a> &gt; <span class="el_source">Task6.java</span></div><h1>Task6.java</h1><pre class="source lang-java linenums">package comp3111.popnames;
+
+import java.lang.Math;
+
+import javafx.scene.layout.HBox;
+import javafx.scene.Scene;
+
+/**
+ * this class handles all inquiries of Task6, no need to create an object, use static methods only
+ */
+<span class="nc" id="L11">public class Task6 {</span>
+
+	/**
+	 * static function that return a summary according to algorithm X1
+	 * @param iName
+	 * @param mName
+	 * @return summary
+	 */
+	public static String compatibility_X1(String iName, String mName){
+<span class="fc bfc" id="L20" title="All 2 branches covered.">		float score = (iName.length()==mName.length()) ? 100 : 0;</span>
+<span class="fc" id="L21">		return String.format(&quot;Your compatibility score with your mate is %f.&quot; , score);</span>
+	}
+	
+	/**
+	 * static method that return a summary according to algorithm X2
+	 * @param iName User's name
+	 * @param iGender
+	 * @param iYOB
+	 * @param mName Mate's name
+	 * @param mGender
+	 * @param mYOB
+	 * @param iPreference true when user prefer older mate
+	 * @return summary
+	 */
+	public static String compatibility_X2
+	(String iName, String iGender, int iYOB, String mName, String mGender, int mYOB, boolean iPreference) {
+<span class="fc" id="L37">		float score = 100;</span>
+		
+<span class="pc bpc" id="L39" title="1 of 2 branches missed.">		int year1 = (iYOB&lt;mYOB) ? iYOB : mYOB;</span>
+<span class="pc bpc" id="L40" title="1 of 2 branches missed.">		int year2 = (iYOB&lt;mYOB) ? mYOB : iYOB;</span>
+<span class="fc" id="L41">		Task3 t3I = new Task3 (year1,year2,iGender,iName);</span>
+<span class="fc" id="L42">		Task3 t3M = new Task3 (year1,year2,mGender,mName);</span>
+<span class="fc" id="L43">		float iRankMean = t3I.getAverageRank();</span>
+<span class="fc" id="L44">		float mRankMean = t3M.getAverageRank();</span>
+<span class="pc bpc" id="L45" title="2 of 4 branches missed.">		if(iRankMean&lt;0||mRankMean&lt;0) {</span>
+<span class="nc" id="L46">			return &quot;One of your names cannot be found in the dataset.&quot;;</span>
+		}
+		
+<span class="fc" id="L49">		double iRankMeanSqrt = Math.sqrt(iRankMean);</span>
+<span class="fc" id="L50">		double mRankMeanSqrt = Math.sqrt(mRankMean);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">		if (iRankMeanSqrt&gt;100) {iRankMeanSqrt=100;}</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">		if (mRankMeanSqrt&gt;100) {mRankMeanSqrt=100;}</span>
+<span class="fc" id="L53">		float rankDiff = (float)Math.abs( iRankMeanSqrt - mRankMeanSqrt );</span>
+<span class="pc bpc" id="L54" title="1 of 2 branches missed.">		float ageDiff = (iPreference)? Math.abs(iYOB-5-mYOB) : Math.abs(iYOB+5-mYOB);</span>
+<span class="fc" id="L55">		score -= rankDiff;</span>
+<span class="fc" id="L56">		score -= ageDiff;</span>
+		
+<span class="fc" id="L58">		String summary = &quot;&quot;;</span>
+		
+<span class="fc" id="L60">		summary += String.format(&quot;Between you and your mate's year of birth, that is, between %d and %d,\n&quot;, year1, year2);</span>
+<span class="fc" id="L61">		summary += String.format(&quot;your name has average rank of %f,&quot; , iRankMean);</span>
+<span class="fc" id="L62">		summary += String.format(&quot; your mate's name has a average rank of %f.\n&quot; , mRankMean);</span>
+		
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">		if(rankDiff &lt; 10)</span>
+<span class="nc" id="L65">			summary += &quot;You and your mate's names have similar level of popularity around that time,&quot;;</span>
+		else
+<span class="fc" id="L67">			summary += &quot;You and your mate's names are far apart in terms of popularity,&quot;;</span>
+		
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">		if(ageDiff &lt;= 5)</span>
+<span class="fc" id="L70">			summary += &quot; your mate's age is just right for you.\n&quot;;</span>
+		else
+<span class="nc" id="L72">			summary += &quot; your mate's age is not preferrable.\n&quot;;</span>
+		
+<span class="fc" id="L74">		summary += String.format(&quot;Therefore, your compatibility score with your mate is %f.&quot; , score);</span>
+		
+<span class="fc" id="L76">		return summary;</span>
+	}
+	
+	/**
+	 * static method that return 2 bar chart, one for each of the names
+	 * @param iName
+	 * @param iGender
+	 * @param iYOB
+	 * @param mName
+	 * @param mGender
+	 * @param mYOB
+	 * @return bar charts
+	 */
+	public static Scene X2Chart(String iName, String iGender, int iYOB, String mName, String mGender, int mYOB) {
+<span class="fc" id="L90">		HBox root = new HBox();</span>
+<span class="fc" id="L91">		Scene T6scene = new Scene(root);</span>
+		
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">		int year1 = (iYOB&lt;mYOB) ? iYOB : mYOB;</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">		int year2 = (iYOB&lt;mYOB) ? mYOB : iYOB;</span>
+<span class="fc" id="L95">		Task3 t3I = new Task3 (year1,year2,iGender,iName);</span>
+<span class="fc" id="L96">		Task3 t3M = new Task3 (year1,year2,mGender,mName);</span>
+		
+<span class="fc" id="L98">		root.getChildren().addAll(t3I.generateBar(),t3M.generateBar());</span>
+<span class="fc" id="L99">		return T6scene;</span>
+	}
+	
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>

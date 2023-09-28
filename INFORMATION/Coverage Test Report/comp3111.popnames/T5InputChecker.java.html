@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>T5InputChecker.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">PopNames3111</a> &gt; <a href="index.source.html" class="el_package">comp3111.popnames</a> &gt; <span class="el_source">T5InputChecker.java</span></div><h1>T5InputChecker.java</h1><pre class="source lang-java linenums">package comp3111.popnames;
+
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
+
+/**
+ * Handle Task 5 input checking and error messages.
+ * @author WANG, Zeyu
+ *
+ */
+public class T5InputChecker extends InputCheckerGeneral {
+    private TextField textfieldT5IName;
+    private TextField textfieldT5IYOB;
+    private RadioButton radiobuttonT5IGenderM;
+    private RadioButton radiobuttonT5IGenderF;
+    private RadioButton radiobuttonT5MGenderM;
+    private RadioButton radiobuttonT5MGenderF;
+    private RadioButton radiobuttonT5AgeY;
+    private RadioButton radiobuttonT5AgeO;
+    private TextField textfieldT5MAgeDiff;
+    private Button buttonT5Generate;
+    private Label labelT5INameWarning;
+    private Label labelT5IYOBWarning;
+    private Label labelT5MADWarning;
+    
+    /**
+     * Construct an checker object.
+     * Parameters are related UI components in the Controller.
+     */
+    public T5InputChecker(TextField textfieldT5IName, TextField textfieldT5IYOB, RadioButton radiobuttonT5IGenderM, RadioButton radiobuttonT5IGenderF,
+    		RadioButton radiobuttonT5MGenderM, RadioButton radiobuttonT5MGenderF, RadioButton radiobuttonT5AgeY, RadioButton radiobuttonT5AgeO,
+<span class="fc" id="L34">    		TextField textfieldT5MAgeDiff, Button buttonT5Generate, Label labelT5INameWarning, Label labelT5IYOBWarning, Label labelT5MADWarning) {</span>
+<span class="fc" id="L35">    	this.textfieldT5IName = textfieldT5IName;</span>
+<span class="fc" id="L36">    	this.textfieldT5IYOB = textfieldT5IYOB;</span>
+<span class="fc" id="L37">    	this.radiobuttonT5IGenderM = radiobuttonT5IGenderM;</span>
+<span class="fc" id="L38">    	this.radiobuttonT5IGenderF = radiobuttonT5IGenderF;</span>
+<span class="fc" id="L39">    	this.radiobuttonT5MGenderM = radiobuttonT5MGenderM;</span>
+<span class="fc" id="L40">    	this.radiobuttonT5MGenderF = radiobuttonT5MGenderF;</span>
+<span class="fc" id="L41">    	this.radiobuttonT5AgeO = radiobuttonT5AgeO;</span>
+<span class="fc" id="L42">    	this.radiobuttonT5AgeY = radiobuttonT5AgeY;</span>
+<span class="fc" id="L43">    	this.textfieldT5MAgeDiff = textfieldT5MAgeDiff;</span>
+<span class="fc" id="L44">    	this.buttonT5Generate = buttonT5Generate;</span>
+<span class="fc" id="L45">    	this.labelT5INameWarning = labelT5INameWarning;</span>
+<span class="fc" id="L46">    	this.labelT5IYOBWarning = labelT5IYOBWarning;</span>
+<span class="fc" id="L47">    	this.labelT5MADWarning = labelT5MADWarning;</span>
+<span class="fc" id="L48">    }</span>
+    
+    private boolean checkT5IName() {
+<span class="fc" id="L51">    	String iNameStr = textfieldT5IName.getText();</span>
+    	
+    	// if empty, show nothing
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    	if (iNameStr.isEmpty()) {</span>
+<span class="fc" id="L55">    		labelT5INameWarning.setVisible(false);</span>
+<span class="fc" id="L56">    		buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L57">    		return false;</span>
+    	}
+    	
+    	// if not chars, show error msg
+<span class="fc bfc" id="L61" title="All 2 branches covered.">    	if (!isPureChars(iNameStr)) {</span>
+<span class="fc" id="L62">    		labelT5INameWarning.setText(&quot;Please input a name with English characters only&quot;);</span>
+<span class="fc" id="L63">    		labelT5INameWarning.setVisible(true);</span>
+<span class="fc" id="L64">    		buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L65">    		return false;</span>
+    	}
+<span class="fc" id="L67">    	iNameStr = iNameStr.substring(0,1).toUpperCase() + iNameStr.substring(1).toLowerCase();</span>
+    	// if can not find iName in iYOB for iGender, return false
+<span class="pc bpc" id="L69" title="4 of 6 branches missed.">    	if (checkT5IYOB() &amp;&amp; (radiobuttonT5IGenderM.isSelected() || radiobuttonT5IGenderF.isSelected())) {</span>
+<span class="fc" id="L70">    		int iYOB = Integer.parseInt(textfieldT5IYOB.getText());</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">    		char iGender = radiobuttonT5IGenderM.isSelected() ? 'M' : 'F';</span>
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">    		String iGenderStr = radiobuttonT5IGenderM.isSelected() ? &quot;male&quot; : &quot;female&quot;;</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">    		if (TaskGeneral.getRank(iYOB, iNameStr, iGender) == TaskGeneral.getTotalNames(iYOB, iGender)) {</span>
+<span class="fc" id="L74">    			labelT5INameWarning.setText(String.format(&quot;Can not find this %s name in year %d&quot;, iGenderStr, iYOB));</span>
+<span class="fc" id="L75">    			labelT5INameWarning.setVisible(true);</span>
+<span class="fc" id="L76">    			buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L77">    			return false;</span>
+    		} else {
+<span class="fc" id="L79">    	    	labelT5INameWarning.setVisible(false);</span>
+<span class="fc" id="L80">    	    	return true;</span>
+    		}
+    	}
+    	// info not sufficient
+<span class="nc" id="L84">		labelT5INameWarning.setVisible(false);</span>
+<span class="nc" id="L85">		buttonT5Generate.setDisable(true);</span>
+<span class="nc" id="L86">    	return false;</span>
+    }
+    
+    private boolean checkT5IYOB() {
+<span class="fc" id="L90">    	String iYOBStr = textfieldT5IYOB.getText();</span>
+    	// empty
+<span class="fc bfc" id="L92" title="All 2 branches covered.">    	if (iYOBStr.isEmpty()) {</span>
+<span class="fc" id="L93">    		labelT5IYOBWarning.setVisible(false);</span>
+<span class="fc" id="L94">    		buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L95">    		return false;</span>
+    	}
+    	
+    	// not pure number
+<span class="pc bpc" id="L99" title="1 of 4 branches missed.">    	if (!isDigit(iYOBStr) || (iYOBStr.length() != 4)) {</span>
+<span class="fc" id="L100">    		labelT5IYOBWarning.setText(&quot;Please input an 4 digits integer&quot;);</span>
+<span class="fc" id="L101">    		labelT5IYOBWarning.setVisible(true);</span>
+<span class="fc" id="L102">    		buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L103">    		return false;</span>
+    	}
+
+<span class="fc" id="L106">    	int iYOBInt = Integer.parseInt(iYOBStr);</span>
+    	// preference and age diff are OK, check iYOB +- MAX between 1880 - 2019
+<span class="pc bpc" id="L108" title="1 of 6 branches missed.">    	if ((radiobuttonT5AgeY.isSelected() || radiobuttonT5AgeO.isSelected()) &amp;&amp; isDigit(textfieldT5MAgeDiff.getText())) {</span>
+<span class="fc" id="L109">    		boolean older = radiobuttonT5AgeO.isSelected();</span>
+<span class="fc" id="L110">    		int bound = iYOBInt;</span>
+<span class="fc bfc" id="L111" title="All 2 branches covered.">    		if (older) bound += Integer.parseInt(textfieldT5MAgeDiff.getText());</span>
+<span class="fc" id="L112">    		else bound -= Integer.parseInt(textfieldT5MAgeDiff.getText());</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">    		if (bound &lt; 1880) {</span>
+<span class="fc" id="L114">    			labelT5IYOBWarning.setText(&quot;Please keep your birth year - max age difference &gt;= 1880&quot;);</span>
+<span class="fc" id="L115">    			labelT5IYOBWarning.setVisible(true);</span>
+<span class="fc" id="L116">    			buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L117">        		return false;</span>
+    		}
+    			
+<span class="fc bfc" id="L120" title="All 2 branches covered.">    		if (bound &gt; 2019) {</span>
+<span class="fc" id="L121">    			labelT5IYOBWarning.setText(&quot;Please keep your birth year + max age difference &lt;= 2019&quot;);</span>
+<span class="fc" id="L122">    			labelT5IYOBWarning.setVisible(true);</span>
+<span class="fc" id="L123">    			buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L124">        		return false;</span>
+    		}
+    			
+<span class="fc" id="L127">    	} else {</span>
+    		// not OK, only check iYOB between 1880 - 2019
+<span class="pc bpc" id="L129" title="1 of 4 branches missed.">    		if (iYOBInt &lt; 1880 || iYOBInt &gt; 2019) {</span>
+<span class="fc" id="L130">    			labelT5IYOBWarning.setText(&quot;Please input a year between 1880 - 2019&quot;);</span>
+<span class="fc" id="L131">    			labelT5IYOBWarning.setVisible(true);</span>
+<span class="fc" id="L132">    			buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L133">    			return false;</span>
+    		}
+    	}
+<span class="fc" id="L136">    	labelT5IYOBWarning.setVisible(false);</span>
+<span class="fc" id="L137">    	return true;</span>
+    }
+    
+    /**
+     * check max age difference
+     * @return
+     */
+    private boolean checkT5MAD() {
+<span class="fc" id="L145">    	String maxAD = textfieldT5MAgeDiff.getText();</span>
+    	// empty
+<span class="fc bfc" id="L147" title="All 2 branches covered.">    	if (maxAD.isEmpty()) {</span>
+<span class="fc" id="L148">    		labelT5MADWarning.setVisible(false);</span>
+<span class="fc" id="L149">    		buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L150">    		return false;</span>
+    	}
+    	
+    	// not number
+<span class="fc bfc" id="L154" title="All 2 branches covered.">    	if (!isDigit(maxAD)) {</span>
+<span class="fc" id="L155">    		labelT5MADWarning.setText(&quot;Please input an integer with less than 9 digits&quot;);</span>
+<span class="fc" id="L156">    		labelT5MADWarning.setVisible(true);</span>
+<span class="fc" id="L157">    		buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L158">    		return false;</span>
+    	}
+<span class="fc" id="L160">    	int maxADInt = Integer.parseInt(maxAD);</span>
+    	// preference and iYOB OK, check iYOB +- MAX between 1880 - 2019
+<span class="pc bpc" id="L162" title="1 of 6 branches missed.">    	if ((radiobuttonT5AgeY.isSelected() || radiobuttonT5AgeO.isSelected()) &amp;&amp; isInBound(textfieldT5IYOB.getText())) {</span>
+<span class="fc" id="L163">    		boolean older = radiobuttonT5AgeO.isSelected();</span>
+<span class="fc" id="L164">    		int bound = Integer.parseInt(textfieldT5IYOB.getText());</span>
+<span class="fc bfc" id="L165" title="All 2 branches covered.">    		if (older) bound += maxADInt;</span>
+<span class="fc" id="L166">    		else bound -= maxADInt;</span>
+<span class="fc bfc" id="L167" title="All 2 branches covered.">    		if (bound &lt; 1880) {</span>
+<span class="fc" id="L168">    			labelT5MADWarning.setText(&quot;Please keep your birth year - max age difference &gt;= 1880&quot;);</span>
+<span class="fc" id="L169">        		labelT5MADWarning.setVisible(true);</span>
+<span class="fc" id="L170">        		buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L171">        		return false;</span>
+    		}
+    			
+<span class="fc bfc" id="L174" title="All 2 branches covered.">    		if (bound &gt; 2019) {</span>
+<span class="fc" id="L175">    			labelT5MADWarning.setText(&quot;Please keep your birth year + max age difference &lt;= 2019&quot;);</span>
+<span class="fc" id="L176">    			labelT5MADWarning.setVisible(true);</span>
+<span class="fc" id="L177">        		buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L178">        		return false;</span>
+    		}
+
+<span class="fc" id="L181">    	} else {</span>
+    		// info not sufficient, only check MAD &lt;= 2019 - 1880
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">    		if (maxADInt &gt; 2019 - 1880) {</span>
+<span class="fc" id="L184">    			labelT5MADWarning.setText(&quot;Please keep max age difference &lt;= 139&quot;);</span>
+<span class="fc" id="L185">    			labelT5MADWarning.setVisible(true);</span>
+<span class="fc" id="L186">        		buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L187">        		return false;</span>
+    		}
+    	}
+    	
+<span class="fc" id="L191">    	labelT5MADWarning.setVisible(false);</span>
+<span class="fc" id="L192">    	buttonT5Generate.setDisable(false);</span>
+<span class="fc" id="L193">    	return true;</span>
+    }
+    
+    /**
+     * Start checking after an checker object is created.
+     */
+    @Override
+    public void check() {
+<span class="fc" id="L201">    	boolean iName = checkT5IName();</span>
+<span class="fc" id="L202">    	boolean iYOB = checkT5IYOB();</span>
+<span class="fc" id="L203">    	boolean maxAD = checkT5MAD();</span>
+    	
+<span class="pc bpc" id="L205" title="5 of 10 branches missed.">    	if (iName &amp;&amp; iYOB &amp;&amp; maxAD &amp;&amp; (radiobuttonT5MGenderM.isSelected() || radiobuttonT5MGenderF.isSelected()))</span>
+<span class="fc" id="L206">    		buttonT5Generate.setDisable(false);</span>
+<span class="fc" id="L207">    	else buttonT5Generate.setDisable(true);</span>
+<span class="fc" id="L208">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
