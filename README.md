@@ -2,11 +2,11 @@
 
 Unit and Coverage Test Reports, Screenshots of Sample IO, Documentations and Supplementary Notes can be found in following folder:
 
-https://github.com/wiggleman/TeamRepo/tree/master/INFORMATION/
+https://github.com/zwangek/NamingSoftware/tree/master/INFORMATION/
 
 ## Team ID: T-29
 
-Repo url: https://github.com/wiggleman/TeamRepo
+Repo url: https://github.com/zwangek/NamingSoftware
 
 ## Members
 
